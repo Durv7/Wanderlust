@@ -57,8 +57,8 @@ app.post("/listings",wrapAsync(async(req,res,next)=>{
         {
             throw new ExpressError("400",result.error);
         }
-        let newlisting=Listing(...req.body.listing);
-        console.log(req.body.listing)
+        let newlisting=new Listing(req.body.listing);
+        // console.log(newlisting);
         await newlisting.save();
        res.redirect("/listings");
 }));
