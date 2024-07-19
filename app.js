@@ -1,17 +1,31 @@
+if(process.env.NODE_ENV != "process")
+{
+    require("dotenv").config();
+}
 const express=require("express");
 const app=express();
 const mongoose=require("mongoose");
-const Listing=require("./models/listing.js");
 const path=require("path");
 const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate");
-const wrapAsync=require("./utils/wrapAsync.js");
 const ExpressError=require("./utils/ExpressError.js");
-const {listingSchema}=require("./schema.js");
+const listingRouter=require("./routes/listings.js");
+const reviewRouter=require("./routes/reviews.js");
+const userRouter=require("./routes/user.js");
+const session=require("express-session");
+const MongoStore = require('connect-mongo');
+const flash=require("connect-flash");
+const User=require("./models/user.js");
+const passport=require("passport");
+const LocalStrategy=require("passport-local");
+const user = require("./models/user.js");
+
+let dbUrl=process.env.ATLAS_URL;
 
 app.set("views engine","ejs");
 app.set("views",path.join(__dirname,"/views"));
 app.use(express.static(path.join(__dirname,"public")))
+
 app.use(methodOverride("_method"))
 app.use(express.urlencoded({extended:true}));
 
@@ -24,68 +38,63 @@ main().then(res=>{
 
 async function main()
 {
-    mongoose.connect("mongodb://127.0.0.1:27017/wonderlust");
+    mongoose.connect(dbUrl);
 }
 
-app.get("/",(req,res)=>{
-    res.send("Its Root");
+const store=MongoStore.create({
+    mongoUrl:dbUrl,
+    touchAfter: 24 * 3600 ,
+    crypto:{
+        secret:"mysupersecret"
+    }
 })
 
-//index route.
-app.get("/listings",async (req,res)=>{
-    let allListings=await Listing.find({});
-    res.render("listings/index.ejs",{allListings});
-});
-
-//new route
-app.get("/listings/new",(req,res)=>{
-    res.render("listings/new.ejs");
+store.on("error",()=>{
+    console.log("Error In Mongo Session Store.",err);
 })
 
-//READ route(show)
-app.get("/listings/:id",async (req,res)=>{
-    let { id }=req.params;
-    let listing=await Listing.findById(id);
-    res.render("listings/show.ejs",{listing});
+let sessionOptions={
+    store,
+    secret:"mysupersecret",
+    resave:false,
+    saveUninitialized:true,
+    cookie:{
+        expires:Date.now()+7*24*60*60*1000,
+        maxAge:7*24*60*60*1000,
+        httpOnly:true,
+    }   
+}
+
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use(passport.initialize());//for every req passport gets initilized.
+app.use(passport.session());//function helps to authenticate user throuout one session.
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());//serializing means storing information related to user in  session.
+passport.deserializeUser(User.deserializeUser());//deserializing means removing information.
+
+
+app.use((req,res,next)=>{
+    res.locals.success=req.flash("success");
+    res.locals.error=req.flash("error");
+    res.locals.currUser=req.user;
+    next();
 })
 
-//create route
-app.post("/listings",wrapAsync(async(req,res,next)=>{
-        let result=listingSchema.validate(req.body);
-        console.log(result);
-        if(result.error)
-        {
-            throw new ExpressError("400",result.error);
-        }
-        let newlisting=new Listing(req.body.listing);
-        // console.log(newlisting);
-        await newlisting.save();
-       res.redirect("/listings");
-}));
+app.use("/listings",listingRouter);
+app.use("/listings/:id/reviews",reviewRouter);
+app.use("/",userRouter);
 
-//edit route
-app.get("/listings/:id/edit",wrapAsync(async(req,res)=>{
-    let {id}=req.params;
-    let listing=await Listing.findById(id);
-    res.render("listings/edit.ejs",{listing});
-}));
+app.get("/demouser",async(req,res)=>{
+    let fakeUser=new User({
+        email:"user1@gmail.com",
+        username:"user1",
+    });
 
-//update route
-app.put("/listings/:id",wrapAsync(async (req,res,next)=>{
-    // if(!req.body.listing)
-    // {
-    //     throw new ExpressError(400,"Send Valid Data!");
-    // }
-    let { id }=req.params;
-    await Listing.findByIdAndUpdate(id,{...req.body.listing});
-    res.redirect(`/listings/${id}`);
-}));
-
-//DELETE route
-app.delete("/listings/:id",async(req,res)=>{
-    let {id }=req.params;
-    let deletedListing=await Listing.findByIdAndDelete(id);
-    res.redirect("/listings");
+    let registeredUser= await User.register(fakeUser,"helloworld"); //register method used to save user login info to DB. it automatically checks uniqueness of username.
+    res.send(registeredUser);
 })
 
 app.all("*",(req,res,next)=>{

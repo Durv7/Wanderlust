@@ -1,0 +1,23 @@
+<% layout("layouts/boilerplate.ejs")%>
+<%- include("../includes/filters.ejs") %>
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3 listings">
+    <%for(let listing of allListings){%>
+        <% if(listing.category.includes(filter)){ %>
+        <a href="/listings/<%=listing._id%>" class="card-linking">
+            <div class="card listing-card">
+                <img src="<%= listing.image.url%>" class="card-img-top" alt="listing-img">
+                <div class="card-img-overlay"></div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <b>
+                            <%=listing.title%>
+                        </b> <br>
+                        &#x20B9;<%=listing.price.toLocaleString("en-IN")%>/night
+                            <i class="taxInfo"> +18% GST</i>
+                    </p>
+                </div>
+            </div>
+        </a>
+        <% } %>
+        <%}%>
+</div>

@@ -58,9 +58,17 @@ body{
     text-decoration: underline;
 }
 
+
+.newLink:hover{
+    background-color: lightgray;
+    border-radius: 12px;
+}
+
+
+
 /* cards */
 
-.card{
+.listing-card{
     border:none !important;
     margin-bottom: 2rem !important;
 }
@@ -121,4 +129,74 @@ body{
 .show-img{
     height: 30vh;
     object-fit: cover;
+}
+
+/* review */
+.review-card{
+    padding:3px ;
+}
+
+/* filter */
+#filters {
+            
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.index-container{
+    background-color: white !important;
+}
+
+.filter {
+    text-align: center;
+    margin-right: 1rem;
+    margin-top: 1rem;
+    opacity: 0.8;
+    cursor: pointer;
+    display: block !important;
+}
+
+.filter:hover {
+    opacity: 1;
+}
+
+.filter p {
+    font-size: 0.8rem;
+}
+
+.filter a{
+    text-decoration: none;
+    color: black;
+}
+
+.tax-switch {
+    /* /* display: block !important; */
+    padding: 5px;
+    margin-left: 100px; 
+    /* align-items: center; */
+    /* margin-left:12rem ; */
+    border-radius: 12px;
+    border: 1px solid grey;
+    width: 280px;
+    
+}
+
+.taxInfo {
+    display: none;
+}
+
+@media(width < 992px)
+{
+        #filters{
+            background-color: #e9ecef;
+            z-index: 1 !important;;
+            border-radius: 10px;
+        }
+        .listings{
+            margin-top: 50px;
+        }
+        .tax-switch{
+            margin-bottom:10px ;
+        }
 }

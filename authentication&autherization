@@ -1,0 +1,21 @@
+authentication:-
+    authentication is refered to user checking .i.e is user already register is he entered right password such kind of login 
+    related things comes under authentication.
+
+    main two important factors here are username and password.
+
+    password is very sensetive information ,hence we cannot store it as it is. for security purpose we stores a hashed from of 
+    password,
+    before hashing password gets salted i.e. some strings are added to it
+
+    passport is library which helps in authentication.
+    passport-local helps us to simple usernaem,password registeration,there are other forms also which we can implement to add options like sign up with google ,sign up with facebook.
+
+
+    passport-local-mongoose: this library helps us to do authentication with working with mongoDB database.
+                            this library inheritly adds username and password. and also it automatically adds salt value and hashing function on it. 
+
+autherization:-
+    Autherization is having access for doing something. like who can delete the particular listing or review,who can edit given listing.
+    Before doing autherization we need to add one more feild to listing schema which known as owner of  the listing,which holds the id of user.
+    

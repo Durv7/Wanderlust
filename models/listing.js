@@ -1,4 +1,6 @@
 const mongoose=require("mongoose");
+const Review=require("./review.js");
+// const User=require("./user.js");
 
 let Schema=mongoose.Schema;
 
@@ -11,15 +13,44 @@ let listingSchema=Schema({
     description:String,
     image:
     {
-        type:String,
-        default:"https://media.istockphoto.com/id/1295744448/photo/guest-house-in-middle-of-natural-surroundings-of-coconut-tree-plantation-pollachi-tamil-nadu.webp?b=1&s=170667a&w=0&k=20&c=86IrdNp7yFVqlGwlEW41pihA4Em3R_wU955vSXqzVA8=",
-        set:(v)=>v===""?"https://media.istockphoto.com/id/1295744448/photo/guest-house-in-middle-of-natural-surroundings-of-coconut-tree-plantation-pollachi-tamil-nadu.webp?b=1&s=170667a&w=0&k=20&c=86IrdNp7yFVqlGwlEW41pihA4Em3R_wU955vSXqzVA8=":v
+      url:String,
+      filename:String,
     },
     price:Number,
     location:String,
-    country:String
+    country:String,
+    reviews:[{
+      type:Schema.Types.ObjectId,
+      ref:"Review"
+    }],
+
+    owner:{
+      type: Schema.Types.ObjectId,
+      ref:"User",
+    },
+
+    category:{
+      type:[
+        {
+          type:String,
+          enum:["seashore","rooms","arctic","boats","mountain","mountain city","castels","farm","camping"],
+        }
+      ]
+    }
 })
 
+listingSchema.post("findOneAndDelete",async(listing)=>{
+  
+
+  if(listing)
+  {
+      await Review.deleteMany({ _id: { $in: listing.reviews }})
+  }
+  
+})
+
+
 let Listing=mongoose.model("Listing",listingSchema);
+
 
 module.exports=Listing;

@@ -4,7 +4,7 @@
         <div class="row mt-3 ">
             <div class="col-8 offset-2">
                 <h3>Create New Listing</h3>
-                <form method="post" action="/listings" novalidate class=" needs-validation">
+                <form method="post" action="/listings" novalidate class=" needs-validation" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="title" class="form-label">Title</label>
                         <input type="text" name="listing[title]" placeholder="Enter Cachy Title" class="form-control"
@@ -21,12 +21,13 @@
                                 Please Enter A Short Description.
                               </div>
                     </div>
-
                     <div class="mb-3">
                         <label for="image" class="form-label">Image</label>
-                        <input type="text" name="listing[image]" placeholder="Enter Image url" class="form-control"
-                            id="image">
+                        <input type="file" name="listing[image]" class="form-control"
+                            id="image" required>
                     </div>
+
+
                     <div class="row">
                         <div class="mb-3 col-md-4">
                             <label for="price" class="form-label">Price</label>
@@ -45,6 +46,7 @@
                                     Please Enter  Valid Country Name.
                                   </div>
                         </div>
+
                     </div>
 
                     <div class="mb-3">
@@ -55,7 +57,22 @@
                                 Please Enter A Valid Location.
                               </div>
                     </div>
-                    <div class="mt-3 mb-5">
+                    <div class="mb-3 col-md-4">
+                        <label for="category" class="form-label">Category</label>
+                        <select name="listing[category]" id="category" class="form-control" required multiple>
+                            <option value="select category" disabled >select category</option>
+                            <option value="seashor">Seashore</option>
+                            <option value="camping">Rooms</option>
+                            <option value="farm">Farm</option>
+                            <option value="boats">Boats</option>
+                            <option value="castels">Castels</option>
+                            <option value="mountain">Mountain</option>
+                            <option value="mountain city">Mountain City</option>
+                            <option value="arctic">Arctic</option>
+                            <option value="camping">Camping</option>
+                        </select>
+                    </div>
+                    <div class="mt-5 mb-5">
                         <button class="btn btn-dark add-btn">Add</button>
                     </div>
                 </form>
