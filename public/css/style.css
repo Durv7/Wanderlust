@@ -64,6 +64,27 @@ body{
     border-radius: 12px;
 }
 
+.search-bar{
+    margin-left: auto;
+  }
+  .search-input{
+    width: 300px !important;
+    border-radius:1rem ;
+  }
+  .search-btn{
+    border: none !important;
+    border-radius:1rem ;
+    background-color: #fe424d !important;
+    color: white;
+  }
+  @media (width<768px)
+      {
+            .newLink:hover{
+              background-color: transparent ;
+              border: none;
+            }
+      }
+
 
 
 /* cards */

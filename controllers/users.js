@@ -35,7 +35,6 @@ module.exports.userLogin=async (req,res) => {
     req.flash("success", "Welcome Back To Wonderlust!!");
 
     let redirectUrl=res.locals.redirectUrl || "/listings";
-    // console.log(redirectUrl);
     res.redirect(redirectUrl);
 }
 

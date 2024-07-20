@@ -16,12 +16,10 @@ router.route("/")
 //new route
 router.get("/new",isLoggedIn,listingController.renderNewForm)
 
-router.get("/filter",async(req,res)=>{
-    res.locals.filter=req.query.q;
-    let allListings=await Listing.find({});
-    res.render("listings/filter.ejs",{allListings});
-})
+//filtered listing
+router.get("/filter",listingController.filteredListing);
 
+router.get("/search",listingController.searchListing);
 
 router.route("/:id")
 .get(wrapAsync( listingController.showListing ))//READ route(show)
