@@ -79,7 +79,7 @@ module.exports.filteredListing=async(req,res)=>{
 }
 
 module.exports.searchListing=async(req,res)=>{
-    let countrySearch =req.query.search;
+    let countrySearch =req.query.q;
     allListings=await Listing.find({country:countrySearch});
     res.render("listings/index.ejs", {allListings});
 }
