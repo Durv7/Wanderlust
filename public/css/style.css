@@ -6,7 +6,6 @@ body{
 }
 .container{
     flex:1;
-    margin-left: 50px;
 }
 
 /* navbar */
@@ -79,12 +78,19 @@ body{
   }
   @media (width<768px)
       {
+            .navbar .searchNav{
+                background-color:#e9ecef ;
+                width: 90%;
+            }
+            .navbar .search-bar{
+                width:50%;
+                margin-left: 0px;
+            }
             .newLink:hover{
               background-color: transparent ;
               border: none;
             }
       }
-
 
 
 /* cards */
@@ -155,7 +161,9 @@ body{
 /* review */
 .review-card{
     padding:3px ;
+
 }
+
 
 /* filter */
 #filters {
@@ -199,7 +207,7 @@ body{
     /* margin-left:12rem ; */
     border-radius: 12px;
     border: 1px solid grey;
-    width: 280px;
+    width: 150px;
     
 }
 
@@ -219,5 +227,6 @@ body{
         }
         .tax-switch{
             margin-bottom:10px ;
+            margin-left: 05px;
         }
 }
