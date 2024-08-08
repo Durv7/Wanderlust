@@ -3,12 +3,13 @@
     <style>
         @media (width<992px) {
             .review-card {
-                
+
                 width: 100% !important;
             }
-            .pop-up span{
+
+            .pop-up span {
                 right: 200px;
-                top:50px
+                top: 50px
             }
 
         }
@@ -31,7 +32,7 @@
             top: 40px;
             cursor: pointer;
             right: 20px;
-            color:  rgb(47, 46, 46);
+            color: rgb(47, 46, 46);
             font-size: 40px;
             font-weight: bolder;
             z-index: 100;
@@ -59,6 +60,11 @@
             object-fit: cover;
             width: 100%;
             height: 100%;
+        }
+
+        .map_popup{
+            height: 100px;
+            border-radius: 50%;
         }
     </style>
 
@@ -144,38 +150,89 @@
 
         </div>
 
-        <div class="col-8 offset-3 mt-3">
-            <h5>Reviews</h5>
-            <div class="row">
-                <%for(let review of listing.reviews ){%>
+        <% if( listing.reviews.length>0) { %>
+            <div class="col-8 offset-3 mt-3">
+                <h5>Reviews</h5>
+                <div class="row">
+                    <%for(let review of listing.reviews ){%>
 
-                    <div class="card col-5 mb-3 ms-3 review-card">
-                        <h5 class="card-title">@<%=review.author.username%>
-                        </h5>
-                        <p class="starability-result" data-rating="<%=review.rating%>">
-                        </p>
-                        <p class="card-text">
-                            <%=review.content%>
-                        </p>
-                        <form method="post" action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE"
-                            class="mb-1">
-                            <button class="btn btn-dark btn-sm">Delete</button>
-                        </form>
-                    </div>
-                    <%}%>
+                        <div class="card col-5 mb-3 ms-3 review-card">
+                            <h5 class="card-title">@<%=review.author.username%>
+                            </h5>
+                            <p class="starability-result" data-rating="<%=review.rating%>">
+                            </p>
+                            <p class="card-text">
+                                <%=review.content%>
+                            </p>
+                            <form method="post"
+                                action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE" class="mb-1">
+                                <button class="btn btn-dark btn-sm">Delete</button>
+                            </form>
+                        </div>
+                        <%}%>
+                </div>
             </div>
-        </div>
+            <% } %>
+                <div class="col-8 offset-3 mt-3 mb-3">
+                    <h4>Where You Will Be</h4>
+                    <div id="map"></div>
+                </div>
     </body>
 
-    <script>
-        document.querySelectorAll(".show-img").forEach(image => {
-            image.onclick = () => {
-                document.querySelector(".pop-up").style.display = 'block';
-                document.querySelector(".pop-up img").src = image.getAttribute("src");
-            }
-        });
+    <script src="/js/pop-upImage.js">   </script>
 
-        document.querySelector(".pop-up span").onclick = () => {
-            document.querySelector(".pop-up").style.display = "none";
-        }    
+    <script>
+        mapToken = '<%=process.env.MAP_TOKEN%>';
+    </script>
+
+    <script>
+        mapToken = '<%= process.env.MAP_TOKEN%>'
+        maptilersdk.config.apiKey = mapToken;
+        const map = new maptilersdk.Map({
+            container: 'map', // container's id or the HTML element to render the map
+            style: maptilersdk.MapStyle.STREETS,
+            center: [-97.7485, 30.2711], // starting position [lng, lat]
+            zoom: 11.7, // starting zoom
+        });
+        map.on('load', async () => {
+            map.addSource('search-results', {
+                type: 'geojson',
+                data: {
+                    "type": "FeatureCollection",
+                    "features": []
+                }
+            });
+
+            const results = await maptilersdk.geocoding.forward('<%=listing.location%>');
+            map.getSource('search-results').setData(results);
+            if (results.features[0]) {
+                map.fitBounds(results.features[0].bbox, { maxZoom: 19 })
+            }
+            const marker = new maptilersdk.Marker({
+                color: "#fe424d",
+            })
+                .setLngLat(results.features[0].center)
+                .addTo(map);
+
+
+            const markerHeight = 30, markerRadius = 10, linearOffset = 25;
+            const popupOffsets = {
+                'top': [0, 0],
+                'top-left': [0, 0],
+                'top-right': [0, 0],
+                'bottom': [0, -markerHeight],
+                'bottom-left': [linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
+                'bottom-right': [-linearOffset, (markerHeight - markerRadius + linearOffset) * -1],
+                'left': [markerRadius, (markerHeight - markerRadius) * -1],
+                'right': [-markerRadius, (markerHeight - markerRadius) * -1]
+            };
+            const popup = new maptilersdk.Popup({offset: popupOffsets, className: 'map-popup'})
+                .setLngLat(results.features[0].center)
+                .setHTML("<h6><%=listing.title%></h6>")
+                .setMaxWidth("300px")
+                .addTo(map);
+
+        }
+
+        );
     </script>
